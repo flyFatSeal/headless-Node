@@ -1,0 +1,43 @@
+{
+	"name": "fatseal-anydoor",
+	"version": "0.1.1",
+	"description": "practive node.js static server web",
+	"main": "src/app.js",
+	"bin": {
+		"anydoor": "bin/anydoor"
+	},
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"lint": "eslint .",
+		"fix": "eslint --fix"
+	},
+	"pre-commit": [
+		"fix",
+		"lint"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/flyFatSeal/headless-Node"
+	},
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"chalk": "^2.4.1",
+		"curl": "^0.1.4",
+		"handlebars": "^4.0.11",
+		"node-xlsx": "^0.12.1",
+		"pre-commit": "^1.2.2",
+		"puppeteer": "^1.6.1",
+		"xlsx": "^0.13.3",
+		"yargs": "^12.0.1"
+	},
+	"devDependencies": {
+		"babel-eslint": "^8.2.5",
+		"eslint": "^5.0.1",
+		"eslint-config-standard": "^11.0.0",
+		"eslint-plugin-import": "^2.13.0",
+		"eslint-plugin-node": "^6.0.1",
+		"eslint-plugin-promise": "^3.8.0",
+		"eslint-plugin-standard": "^3.1.0"
+	}
+}
