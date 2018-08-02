@@ -12,12 +12,21 @@ function sleep(delay) {
 	})
 }
 
+function patch(re, s) {
+	try {
+		re = eval('/' + re + '/ig')
+		return s.match(re).length;
+	} catch (e) {
+		return false
+	}
+}
+
 function writeXls(datas) {
 	var buffer = xlsx.build([{
 		name: 'sheet1',
 		data: datas
 	}]);
-	fs.writeFileSync('test1.xlsx', buffer, {
+	fs.writeFileSync('fif.xlsx', buffer, {
 		'flag': 'w'
 	})
 }
@@ -59,7 +68,7 @@ puppeteer.launch({
 	const searchTime = await page.$('#time')
 	await searchTime.click()
 	await page.evaluate(() => {
-		window.location.href = 'http://weixin.sogou.com/weixin?type=2&ie=utf8&query=DS&tsn=5&ft=2018-07-31&et=2018-08-01&interation=&wxid=&usip='
+		window.location.href = 'http://weixin.sogou.com/weixin?type=2&ie=utf8&query=ds&tsn=5&ft=2018-08-01&et=2018-08-02&interation=&wxid=&usip='
 	})
 	// const oneday = await page.$('#time_enter')
 	// await oneday.click()
@@ -82,9 +91,9 @@ puppeteer.launch({
 		Tone: 'Tone',
 		type: '媒体舆情'
 	}
-	for (let i = 0; i < 9; i++) {
+	for (let i = 0; i < 10; i++) {
 		await page.waitForSelector('.mun')
-		await page.waitFor(5000);
+		await page.waitFor(500);
 		const pageArtUl = await page.$('.news-list')
 		let pageArtLi
 		await page.evaluate(e => {
@@ -109,10 +118,24 @@ puppeteer.launch({
 			const time = await page.$('#publish_time')
 			await time.click();
 			const AllInfo = await page.evaluate((getInfo, allHref, i) => {
+				function patch(re, s) {
+					try {
+						re = eval('/' + re + '/ig')
+						return s.match(re).length;
+					} catch (e) {
+						return false
+					}
+				}
+				let img = document.querySelector('.share_media')
+				if (img) {
+					return
+				}
+				let content = document.querySelector('#page-content').innerText
+				let Filter = patch('车', content)
 				let thisInfo = {}
 				let titleBool = document.querySelector('#activity-name')
 				let share = document.querySelector('.share_notice')
-				if (share || !titleBool) {
+				if (share || !titleBool || !(Filter)) {
 					return
 				}
 				let getTime = document.querySelector('#publish_time').innerText
@@ -141,11 +164,13 @@ puppeteer.launch({
 		await page.evaluate((pageHref) => {
 			window.history.go(-pageHref)
 		}, pageHref)
-		await page.waitFor(4000);
-		await page.waitForSelector('.mun')
-		const nextPage = await page.$('#sogou_next');
-		await nextPage.click();
-		await page.waitFor(5000);
+		await page.waitFor(1000);
+		if (i < 9) {
+			await page.waitForSelector('.mun')
+			const nextPage = await page.$('#sogou_next');
+			await nextPage.click();
+			await page.waitFor(1000);
+		}
 	}
 	writeXls(allXlsx);
 	await browser.close();

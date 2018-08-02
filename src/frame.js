@@ -44,3 +44,94 @@ await nextPage.click();
 await page.waitFor(5000);
 
 [getInfo.time, getInfo.title, 3, 5, 6], [getInfo.time, getInfo.title, 3, 5, 6], [getInfo.time, getInfo.title, 3, 5, 6]
+
+//window
+for (let i = 0; i < allHref.length; i++) {
+  await page.waitFor(2000)
+  const AllInfo = await page.evaluate(async (getInfo, allHref, i) => {
+    window.location.href = `${allHref[i]}`
+    window.onload = function () {
+      let thisInfo = {}
+      let getTime
+      let author = document.querySelector('.p-n').getElementsByTagName('a')[0].innerText
+      if (author !== '小易') {
+        getTime = document.querySelector('#newsVisitCountId').nextElementSibling.innerText
+      } else {
+        getTime = document.querySelector('.t-box').getElementsByTagName('span')[0].innerText
+      }
+      let title = document.querySelector('.tit-h1').innerText
+      getInfo.title = title
+      getInfo.author = author
+      getInfo.href = allHref[i]
+      getInfo.time = getTime
+      thisInfo = getInfo
+      return thisInfo
+    }
+
+  }, getInfo, allHref, i)
+  let tempArry = transformArray(AllInfo)
+  allXlsx.push(tempArry)
+  // let writeInfo = '\r\n' + AllInfo.time + ',' + AllInfo.title + ',' + AllInfo.author + ',' + AllInfo.href + '\r\n'
+  // fs.appendFile('微信.txt', writeInfo, function (err) {
+  // 	if (err) {
+  // 		console.info(err);
+  // 	}
+  // })
+}
+//返回当前页		
+const pageHref = allHref.length
+console.log('pageHref', pageHref)
+await page.evaluate((pageHref) => {
+  window.history.go(-pageHref)
+}, pageHref)
+console.log(allXlsx)
+await browser.close();
+
+
+
+//juagde
+if (author !== '小易') {
+  getTime = document.querySelector('#newsVisitCountId').nextElementSibling.innerText
+} else {
+  getTime = document.querySelector('.t-box').getElementsByTagName('span')[0].innerText
+}
+
+
+// 获得当前页面所有连接
+for (let i = 0; i < allHref.length; i++) {
+  await page.goto(allHref[i]);
+  await page.waitFor(2000)
+  const AllInfo = await page.evaluate((getInfo, allHref, i) => {
+    let thisInfo = {}
+    let getTime
+    let author = document.querySelector('.p-n').getElementsByTagName('a')[0].innerText
+    if (author !== '小易') {
+      getTime = document.querySelector('#newsVisitCountId').nextElementSibling.innerText
+    } else {
+      getTime = document.querySelector('.t-box').getElementsByTagName('span')[0].innerText
+    }
+    let title = document.querySelector('.tit-h1').innerText
+    getInfo.title = title
+    getInfo.author = author
+    getInfo.href = allHref[i]
+    getInfo.time = getTime
+    thisInfo = getInfo
+    return thisInfo
+  }, getInfo, allHref, i)
+  let tempArry = transformArray(AllInfo)
+  allXlsx.push(tempArry)
+  // let writeInfo = '\r\n' + AllInfo.time + ',' + AllInfo.title + ',' + AllInfo.author + ',' + AllInfo.href + '\r\n'
+  // fs.appendFile('微信.txt', writeInfo, function (err) {
+  // 	if (err) {
+  // 		console.info(err);
+  // 	}
+  // })
+}
+//返回当前页		
+const pageHref = allHref.length
+console.log('pageHref', pageHref)
+await page.evaluate((pageHref) => {
+  window.history.go(-pageHref)
+}, pageHref)
+console.log(allXlsx)
+await browser.close();
